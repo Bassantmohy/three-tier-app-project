@@ -1,0 +1,32 @@
+services:
+
+  backend:
+  
+    build: .
+    image: backend-image:latest
+    container_name: backend-app
+    depends_on:
+       db:
+        condition: service_healthy
+
+    secrets:
+      - db-password
+   
+  db:
+    image: mysql:latest
+
+    environment:
+       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db-password
+    env_file:
+      - env.txt
+    secrets:
+      - db-password 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s      
+      timeout: 5s        
+      retries: 12        
+      start_period: 70s  
+secrets:
+ db-password:
+     file: ./db-password.txt

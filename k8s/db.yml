@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-deployment
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-deployment
+  template:
+    metadata:
+      labels:
+        app: mysql-deployment
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_DATABASE
+              value: example
+          envFrom:    
+            - secretRef:
+               name: db-password           
+          resources: {}
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql/
+          readinessProbe:
+             tcpSocket:
+               port: 3306 
+             initialDelaySeconds: 80
+             periodSeconds: 10
+             timeoutSeconds: 5
+             failureThreshold: 3
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc

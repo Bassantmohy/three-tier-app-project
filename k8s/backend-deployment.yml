@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend-deployment
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: backend-deployment
+    spec:
+      automountServiceAccountToken: false
+      initContainers:
+        - name: init-db
+          image: busybox:1.28
+          command: ['sh', '-c', "sleep 120; until nc -vz db 3306; do echo waiting for db to be ready; sleep 6; done"]
+      containers:
+      - image: bassant41656/backend-image:latest
+        name: backend-image
+        envFrom:
+           - configMapRef:
+               name: config-env              
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /run/secrets
+        resources: {}
+          
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: db-password
+            items:
+            - key: MYSQL_ROOT_PASSWORD
+              path: db-password
+
+status: {}
