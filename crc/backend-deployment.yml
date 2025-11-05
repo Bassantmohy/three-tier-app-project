@@ -15,30 +15,36 @@ spec:
       labels:
         app: backend-deployment
     spec:
+      tolerations:
+        - key: "node.kubernetes.io/disk-pressure"
+          operator: "Exists"
+          effect: "NoSchedule"
       automountServiceAccountToken: false
       initContainers:
         - name: init-db
           image: busybox:1.28
-          command: ['sh', '-c', "sleep 120; until nc -vz db 3306; do echo waiting for db to be ready; sleep 6; done"]
+          command: ['sh', '-c',"until nc -vz db 3306; do echo waiting for db to be ready; sleep 6; done"]
       containers:
       - image: bassant41656/backend-image:latest
         name: backend-image
-        envFrom:
-           - configMapRef:
-               name: config-env              
+        env:
+          - name: MYSQL_HOST
+            value: db
+          - name: MYSQL_DATABASE
+            value: example    
+
         ports:
           - containerPort: 8000
         volumeMounts:
           - name: secret-volume
-            mountPath: /run/secrets
+            mountPath: /run/secrets/db-password
+            subPath: MYSQL_ROOT_PASSWORD
+            readOnly: true
         resources: {}
           
       volumes:
         - name: secret-volume
           secret:
             secretName: db-password
-            items:
-            - key: MYSQL_ROOT_PASSWORD
-              path: db-password
 
 status: {}

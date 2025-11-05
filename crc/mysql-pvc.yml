@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
 spec:
-  storageClassName: standard
+  storageClassName: crc-csi-hostpath-provisioner
   accessModes:
     - ReadWriteOnce
   resources:

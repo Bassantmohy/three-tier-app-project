@@ -5,7 +5,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: standard
+  storageClassName: crc-csi-hostpath-provisioner
   capacity:
     storage: 10Gi
   accessModes:
