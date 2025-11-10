@@ -6,9 +6,9 @@ metadata:
   name: backend-deployment
 spec:
   ports:
-  - port: 3306
+  - port: 8000
     protocol: TCP
-    targetPort: 3306
+    targetPort: 8000
   selector:
     app: backend-deployment
   type: ClusterIP
