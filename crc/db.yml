@@ -14,23 +14,54 @@ spec:
       labels:
         app: mysql-deployment
     spec:
-      toleration:
-        - key: "node.kubernetes.io/disk-pressure"
-          operator: "Exists"
-          effect: "NoSchedule"
+      # toleration:
+        #- key: "node.kubernetes.io/disk-pressure"
+        # operator: "Exists"
+        # effect: "NoSchedule"
+        #initContainers:
+        #- name: fix-permissions
+        # image: busybox
+        # command: ["sh", "-c", "chown -R 1000:1000 /var/lib/mysql"]
+      serviceAccountName: default
+      securityContext: 
+       fsGroup: 1000650000
+       seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: mysql
           image: mysql:8.0
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000650000
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: MYSQL_DATABASE
               value: example
-          envFrom:    
-            - secretRef:
-               name: db-password           
+            - name:   MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              value: mysql
+                #- name: MYSQL_DATA_DIR
+                #value: /data/mysql/
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: MYSQL_PASSWORD
+
           resources: {}
           volumeMounts:
             - name: mysql-storage
-              mountPath: /var/lib/mysql/
+              mountPath: /var/lib/mysql #/data/mysql/
           readinessProbe:
              tcpSocket:
                port: 3306 

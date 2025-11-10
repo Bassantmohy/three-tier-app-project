@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: proxy-deployment
+  name: proxy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: proxy-deployment
+    spec:
+      #tolerations:
+      #- key: "node.kubernetes.io/disk-pressure"
+      # operator: "Exists"
+      # effect: "NoSchedule"
+      containers:
+      - image: nginx:1.25-alpine
+        name: nginx
+        resources: {}
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+          - name: nginx-ssl-secret-new
+            mountPath: /etc/nginx/ssl
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: nginx-ssl-secret-new
+          secret:
+            secretName: nginx-ssl-secret-new
+
+status: {}
