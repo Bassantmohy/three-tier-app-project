@@ -3,7 +3,6 @@ pipeline {
         kubernetes {
             label 'docker-build-agent'
             defaultContainer 'jnlp'
-            cloud 'minikube'
             yaml """
 apiVersion: v1
 kind: Pod
