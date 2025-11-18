@@ -9,7 +9,7 @@ kind: Pod
 spec:
   containers:
   - name: jnlp
-    image: jenkins/inbound-agent:4.14.0-1-jdk17
+    image: jenkins/inbound-agent:4.15.0-1-jdk17
     tty: true
     command:
     - cat
