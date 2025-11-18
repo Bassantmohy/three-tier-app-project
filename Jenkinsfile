@@ -1,12 +1,7 @@
 // Define the Pod Template required for building and deploying (JNLP, DIND, Tools)
 podTemplate(label: 'docker-build-agent', containers: [
-    // 1. JNLP Agent (The main pipeline runner)
     containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent:4.14.0-1-jdk17', command: '/bin/sh', args: '-c cat', tty: true),
-    
-    // 2. DIND Sidecar (For Docker build commands)
     containerTemplate(name: 'dind', image: 'docker:24.0.7-dind', args: '--storage-driver=overlay2', securityContext: [privileged: true]),
-    
-    // 3. Tools Container (For Helm/kubectl/curl commands)
     containerTemplate(name: 'tools', image: 'alpine/helm:3.14.2', command: '/bin/sh', args: '-c cat', tty: true)
 ]) 
 
@@ -27,12 +22,8 @@ pipeline {
                     url: 'https://github.com/Bassantmohy/three-tier-app-project/'
             }
             post {
-                success {
-                    echo "Source code checked successfully"
-                }
-                failure {
-                    echo "Couldn't check source code"
-                }
+                success { echo "Source code checked successfully" }
+                failure { echo "Couldn't check source code" }
             }
         }
 
@@ -63,17 +54,17 @@ pipeline {
     }
 
     post {
-    success {
-        echo "======== Pipeline executed successfully ========"
-        mail to: 'bassant16.mohy@gmail.com',
-             subject: "Jenkins Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             body: "Good news! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} succeeded.\nCheck it here: ${env.BUILD_URL}"
-    }
-    failure {
-        echo "======== Pipeline execution failed ========"
-        mail to: 'bassant16.mohy@gmail.com',
-             subject: "Jenkins Pipeline Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             body: "Oops! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} failed.\nCheck it here: ${env.BUILD_URL}"
+        success {
+            echo "======== Pipeline executed successfully ========"
+            mail to: 'bassant16.mohy@gmail.com',
+                 subject: "Jenkins Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Good news! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} succeeded.\nCheck it here: ${env.BUILD_URL}"
+        }
+        failure {
+            echo "======== Pipeline execution failed ========"
+            mail to: 'bassant16.mohy@gmail.com',
+                 subject: "Jenkins Pipeline Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Oops! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} failed.\nCheck it here: ${env.BUILD_URL}"
+        }
     }
 }
-
