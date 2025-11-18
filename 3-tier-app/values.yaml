@@ -1,0 +1,19 @@
+backend:
+  appname: backend-deployment
+  image:
+    repository: bassant41656/backend-image
+    tag: latest
+  svcname: backend-svc
+mysql:
+  appname: mysql-deployment
+  storagename: mysql-storage
+  pvc:
+    pvcname: mysql-pvc-dev
+    scname: standard  #for minikube 
+  pv:
+    mountPath: "/mnt/data/mysql"  
+    pvname: mysql-pv-dev
+proxy:
+   appname: proxy-deployment
+   svcname: proxy-svc
+namespace: dev

@@ -1,0 +1,59 @@
+persistence:
+  enabled: true
+  storageClass: csi-hostpath-sc
+  size: "8Gi"
+
+serviceAccount:
+  create: true
+  name: jenkins-sa
+
+controller:
+  volumes:
+    - name: root-cache
+      emptyDir: {}
+
+ #  initContainers:
+ # - name: volume-permissions
+ #  image: busybox
+ #  command: ['sh', '-c', 'chown -R 1000:1000 /var/jenkins_home']
+ #  securityContext:
+ #    runAsUser: 0
+ #  volumeMounts:
+ #    - name: jenkins-home
+ #      mountPath: /var/jenkins_home
+
+  #  podSecurityContext:
+  # runAsUser: 1000
+  # fsGroup: 1000
+
+
+  initContainerEnv:
+    - name: DISABLE_WIZARD
+      value: "true"
+    - name: JENKINS_DOWNLOAD_CACHE_DIR
+      value: "/tmp/cache"
+
+  serviceType: NodePort
+  nodePort: 32000
+
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+
+  podSecurityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+# or `http://` depending on the `tls` configuration.
+  # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
+  # -- Set protocol for Jenkins URL; `https` if `controller.ingress.tls`, `http` otherwise
+  jenkinsUrlProtocol: http
+
+  # -- Set Jenkins URL if you are not using the ingress definitions provided by the chart
+  jenkinsUrl: http://192.168.49.2:32000
+
+rbac:
+  # -- Whether the Jenkins service account should be able to read Kubernetes secrets
+  create: true
+  readSecrets: true

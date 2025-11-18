@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{.Values.proxy.appname}}
+  name: {{.Values.proxy.appname}}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.proxy.appname}}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.proxy.appname}}
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+          - name: nginx-ssl-secret
+            mountPath: /etc/nginx/ssl
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: nginx-ssl-secret
+          secret:
+            secretName: nginx-ssl-secret
+
+status: {}

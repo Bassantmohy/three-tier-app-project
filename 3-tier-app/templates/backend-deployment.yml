@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{.Values.backend.appname}}
+  name: {{.Values.backend.appname}}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.backend.appname}}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.backend.appname}}
+    spec:
+      automountServiceAccountToken: false
+      initContainers:
+        - name: init-db
+          image: busybox:1.28
+          command: ['sh', '-c', "until nc -vz db 3306; do echo waiting for db to be ready; sleep 6; done"]
+      containers:
+      - image: "{{.Values.backend.image.repository}}:{{.Values.backend.image.tag}}"
+        name: backend-image
+        env:
+          - name: MYSQL_HOST
+            value: db
+          - name: MYSQL_DATABASE
+            value: example                  
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /run/secrets
+        resources: {}
+          
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: db-password
+            items:
+            - key: MYSQL_ROOT_PASSWORD
+              path: db-password
+
+status: {}

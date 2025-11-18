@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{.Values.mysql.appname}}
+  name: db
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: {{.Values.mysql.appname}}
+  type: ClusterIP
+status:
+  loadBalancer: {}

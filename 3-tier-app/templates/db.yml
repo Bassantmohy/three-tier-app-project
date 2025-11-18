@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{.Values.mysql.appname}}
+  name: {{.Values.mysql.appname}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.mysql.appname}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.mysql.appname}}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_DATABASE
+              value: example
+          envFrom:    
+            - secretRef:
+               name: db-password           
+          resources: {}
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql/
+          readinessProbe:
+             tcpSocket:
+               port: 3306 
+             initialDelaySeconds: 80
+             periodSeconds: 10
+             timeoutSeconds: 5
+             failureThreshold: 3
+      volumes:
+        - name: {{.Values.mysql.storagename}}
+          persistentVolumeClaim:
+            claimName: {{.Values.mysql.pvc.pvcname}}
