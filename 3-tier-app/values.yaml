@@ -7,6 +7,9 @@ backend:
 mysql:
   appname: mysql-deployment
   storagename: mysql-storage
+  image:
+    repository: mysql
+    tag: 8.0
   pvc:
     pvcname: mysql-pvc-dev
     scname: standard  #for minikube 
@@ -16,4 +19,7 @@ mysql:
 proxy:
    appname: proxy-deployment
    svcname: proxy-svc
+   image:
+    repository: nginx
+    tag: latest
 namespace: dev

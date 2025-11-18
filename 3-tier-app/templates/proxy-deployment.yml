@@ -17,7 +17,7 @@ spec:
         app: {{.Values.proxy.appname}}
     spec:
       containers:
-      - image: nginx:latest
+      - image: "{{.Values.backend.image.repository}}:{{.Values.backend.image.tag}}"
         name: nginx
         resources: {}
         volumeMounts:
