@@ -31,7 +31,9 @@ spec:
     environment {
         DOCKER_REGISTRY_USER = 'bassant41656'
         APP_NAMESPACE = 'dev'
-        HELM_RELEASE_NAME = '3tier-app-release'
+        HELM_RELEASE_NAME = '3tier-app-release' 
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_CRED_ID = 'docker-hub-credentials'
     }
 
     stages {
@@ -39,6 +41,43 @@ spec:
             steps {
                 echo "Checking source code..."
                 git branch: 'HelmCI/CD', url: 'https://github.com/Bassantmohy/three-tier-app-project/'
+            }
+        }
+
+        stage("Build Backend") {
+        steps {
+            // Must run inside the 'dind' container to access Docker daemon
+            container('dind') {
+                echo "Building Backend image with tag: ${IMAGE_TAG}"
+                dir('backend/') { 
+                    sh "docker build -t ${DOCKER_REGISTRY_USER}/3tier-backend:${IMAGE_TAG} ."
+                }
+                echo "Backend image built successfully."
+            }
+        }
+    }
+    
+    // Stage C: Push ONLY the Backend Image
+    stage('Push Backend') {
+        steps {
+            // Use defined credentials to login securely
+            withCredentials([usernamePassword(credentialsId: DOCKER_CRED_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                container('dind') {
+                    // Login, push the new backend image, and logout
+                    sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                    sh "docker push ${DOCKER_REGISTRY_USER}/backend-image:${IMAGE_TAG}"
+                    sh "docker logout"
+                }
+            }
+        }
+    }
+        stage("Smoke Test") {
+            steps {
+                container('tools') {
+                    sh """
+                    curl -k -s -o /dev/null -w "%{http_code}" https://proxy-svc.${APP_NAMESPACE}.svc.cluster.local/health | grep 200
+                    """
+                }
             }
         }
 
@@ -54,16 +93,8 @@ spec:
             }
         }
 
-        stage("Smoke Test") {
-            steps {
-                container('tools') {
-                    sh """
-                    curl -k -s -o /dev/null -w "%{http_code}" https://proxy-svc.${APP_NAMESPACE}.svc.cluster.local/health | grep 200
-                    """
-                }
-            }
-        }
     }
+
 
     post {
         success {
