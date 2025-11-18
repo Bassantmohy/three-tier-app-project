@@ -63,11 +63,17 @@ pipeline {
     }
 
     post {
-        success {
-            echo "======== Pipeline executed successfully ========"
-        }
-        failure {
-            echo "======== Pipeline execution failed ========"
-        }
+    success {
+        echo "======== Pipeline executed successfully ========"
+        mail to: 'bassant16.mohy@gmail.com',
+             subject: "Jenkins Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Good news! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} succeeded.\nCheck it here: ${env.BUILD_URL}"
+    }
+    failure {
+        echo "======== Pipeline execution failed ========"
+        mail to: 'bassant16.mohy@gmail.com',
+             subject: "Jenkins Pipeline Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Oops! The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} failed.\nCheck it here: ${env.BUILD_URL}"
     }
 }
+
