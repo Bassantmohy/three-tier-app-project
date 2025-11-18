@@ -23,9 +23,11 @@ spec:
       containers:
       - image: bassant41656/backend-image:latest
         name: backend-image
-        envFrom:
-           - configMapRef:
-               name: config-env              
+         env:
+          - name: MYSQL_HOST
+            value: db
+          - name: MYSQL_DATABASE
+            value: example                
         ports:
           - containerPort: 8000
         volumeMounts:
