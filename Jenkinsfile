@@ -9,9 +9,6 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: jnlp
-    image: 'jenkins/inbound-agent'
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
   - name: dind
     image: docker:dind
     securityContext:
