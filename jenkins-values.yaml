@@ -35,6 +35,8 @@ controller:
 
   serviceType: NodePort
   nodePort: 32000
+  # -- Node port to listen for agents
+  agentListenerNodePort: 50000
 
   containerSecurityContext:
     runAsUser: 1000
