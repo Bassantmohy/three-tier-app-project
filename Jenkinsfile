@@ -85,11 +85,9 @@ spec:
 
         stage('Wait for Pods Ready') {
             steps {
-                 steps {
-        sh '''
-        sleep 120
-        '''
-                }
+                sh '''
+                sleep 120
+                 '''
             }
         }
 
