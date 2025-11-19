@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'docker-build-agent'
+            //label 'docker-build-agent'
             defaultContainer 'jnlp'
             cloud 'kubernetes'
             yaml """
@@ -10,12 +10,10 @@ kind: Pod
 spec:
   containers:
   - name: jnlp
-    image: jenkins/inbound-agent:4.15.0-1-jdk17
-    tty: true
-    command:
-    - cat
+    image: 'jenkins/inbound-agent'
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
   - name: dind
-    image: docker:24.0.7-dind
+    image: docker:dind
     securityContext:
       privileged: true
     args:
@@ -23,8 +21,6 @@ spec:
   - name: tools
     image: alpine/helm:3.14.2
     tty: true
-    command:
-    - cat
 """
         }
     }
