@@ -47,7 +47,7 @@ spec:
             container('dind') {
                 echo "Building Backend image with tag: ${IMAGE_TAG}"
                 dir('backend/') { 
-                    sh "docker build -t ${DOCKER_REGISTRY_USER}/3tier-backend:${IMAGE_TAG} ."
+                    sh "docker build -t ${DOCKER_REGISTRY_USER}/backend-image:${IMAGE_TAG} ."
                 }
                 echo "Backend image built successfully."
             }
