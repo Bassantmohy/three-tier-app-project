@@ -18,6 +18,9 @@ spec:
   - name: tools
     image: alpine/helm:3.14.2
     tty: true
+    command:
+    - sleep
+    - 10000
 """
         }
     }
