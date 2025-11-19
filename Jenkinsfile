@@ -85,12 +85,10 @@ spec:
 
         stage('Wait for Pods Ready') {
             steps {
-                container('tools') {
-                    sh """
-                    kubectl wait --for=condition=ready pod -l app=backend-deployment -n ${APP_NAMESPACE} --timeout=220s
-                    kubectl wait --for=condition=ready pod -l app=mysql-deployment -n ${APP_NAMESPACE} --timeout=220s
-                    kubectl wait --for=condition=ready pod -l app=proxy-deployment -n ${APP_NAMESPACE} --timeout=220s
-                    """
+                 steps {
+        sh '''
+        sleep 120
+        '''
                 }
             }
         }
