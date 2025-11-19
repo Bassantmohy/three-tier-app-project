@@ -23,4 +23,4 @@ subjects:
 roleRef:
   kind: Role
   name: jenkins-deployer-role
-  apiGroup: rbac.authorization.kbs.io/
+  apiGroup: rbac.authorization.k8s.io/
