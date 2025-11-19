@@ -68,15 +68,7 @@ spec:
             }
         }
     }
-        stage("Smoke Test") {
-            steps {
-                container('tools') {
-                    sh """
-                    curl -k -s -o /dev/null -w "%{http_code}" https://proxy-svc.${APP_NAMESPACE}.svc.cluster.local/health | grep 200
-                    """
-                }
-            }
-        }
+        
 
         stage("Deploy with Helm") {
             steps {
@@ -85,6 +77,16 @@ spec:
                     helm upgrade --install $HELM_RELEASE_NAME ./3-tier-app \
                         --namespace $APP_NAMESPACE \
                         --values ./3-tier-app/values.yaml
+                    """
+                }
+            }
+        }
+
+        stage("Smoke Test") {
+            steps {
+                container('tools') {
+                    sh """
+                    curl -k -s -o /dev/null -w "%{http_code}" https://proxy-svc.${APP_NAMESPACE}.svc.cluster.local/health | grep 200
                     """
                 }
             }
