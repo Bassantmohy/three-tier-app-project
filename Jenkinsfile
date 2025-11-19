@@ -83,6 +83,18 @@ spec:
             }
         }
 
+        stage('Wait for Pods Ready') {
+            steps {
+                container('tools') {
+                    sh """
+                    kubectl wait --for=condition=ready pod -l app=backend-deployment -n ${NAMESPACE} --timeout=220s
+                    kubectl wait --for=condition=ready pod -l app=mysql-deployment -n ${NAMESPACE} --timeout=220s
+                    kubectl wait --for=condition=ready pod -l app=proxy-deployment -n ${NAMESPACE} --timeout=220s
+                    """
+                }
+            }
+        }
+
         stage("Smoke Test") {
             steps {
                 container('tools') {
