@@ -75,6 +75,7 @@ spec:
                 container('tools') {
                     sh """
                     helm upgrade --install $HELM_RELEASE_NAME ./3-tier-app \
+                        --create-namespace  \
                         --namespace $APP_NAMESPACE \
                         --values ./3-tier-app/values.yaml
                     """
