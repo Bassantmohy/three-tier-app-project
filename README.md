@@ -49,3 +49,4 @@ In this project, Jenkins is deployed as a pod on Kubernetes using **Helm**. Cust
 - **Kubernetes**  
 - **Docker**  
 - **GitHub**
+![Screenshot](Screenshot%20from%202025-11-20%2018-39-10.png)
